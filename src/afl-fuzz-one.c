@@ -552,6 +552,15 @@ u8 fuzz_one_original(afl_state_t *afl) {
       before_havoc_findings, before_havoc_edges;
   u8 is_logged = 0;
 
+
+  if (!skip_deterministic_stage(afl, in_buf, out_buf, len, before_det_time)) {
+
+    goto abandon_entry;
+
+  }
+
+  u8 *skip_eff_map = afl->queue_cur->skipdet_e->skip_eff_map;
+
   /* Skip right away if -d is given, if it has not been chosen sufficiently
      often to warrant the expensive deterministic stage (fuzz_level), or
      if it has gone through deterministic testing in earlier, resumed runs
@@ -615,6 +624,8 @@ u8 fuzz_one_original(afl_state_t *afl) {
   for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
 
     afl->stage_cur_byte = afl->stage_cur >> 3;
+
+    if (!skip_eff_map[afl->stage_cur_byte]) continue;
 
     FLIP_BIT(out_buf, afl->stage_cur);
 
@@ -731,6 +742,8 @@ u8 fuzz_one_original(afl_state_t *afl) {
   for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
 
     afl->stage_cur_byte = afl->stage_cur >> 3;
+
+    if (!skip_eff_map[afl->stage_cur_byte]) continue;
 
     FLIP_BIT(out_buf, afl->stage_cur);
     FLIP_BIT(out_buf, afl->stage_cur + 1);
@@ -3454,7 +3467,7 @@ retry_splicing:
   afl->havoc_prof->havoc_stage_time = get_cur_time() - before_havoc_time;
   afl->havoc_prof->total_det_time += afl->havoc_prof->det_stage_time;
 
-  plot_profile_data(afl, afl->queue_cur);
+  // plot_profile_data(afl, afl->queue_cur);
 
 /* we are through with this queue entry - for this iteration */
 abandon_entry:
