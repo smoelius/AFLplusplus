@@ -112,6 +112,7 @@ fi
 if [ "$PLATFORM" = "Darwin" ] ; then
   sysctl kern.sysv.shmmax=524288000
   sysctl kern.sysv.shmmin=1
+  sysctl kern.sysv.shmmni=128
   sysctl kern.sysv.shmseg=48
   sysctl kern.sysv.shmall=131072000
   echo Settings applied.
