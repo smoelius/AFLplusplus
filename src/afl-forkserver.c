@@ -385,6 +385,7 @@ static void afl_child_sync_init(afl_forkserver_t *fsrv) {
     }
 
   #else
+    ACTF("Allocating futex");
     int shm_id = shmget(IPC_PRIVATE, sizeof(u32), IPC_CREAT | IPC_EXCL | 0600);
     if (shm_id < 0) {
       perror("oh no");
