@@ -306,6 +306,8 @@ static void fsrv_exec_child(afl_forkserver_t *fsrv, char **argv) {
 
 static void afl_child_sync_deinit(afl_forkserver_t *fsrv) {
 
+  ACTF("afl_child_sync_deinit called");
+
   #ifdef USEMMAP
   /* Unmap only if we have a valid mapping (guard against MAP_FAILED from a
      failed mmap, or NULL from a failed ftruncate before mmap was called). */
@@ -333,6 +335,7 @@ static void afl_child_sync_deinit(afl_forkserver_t *fsrv) {
   if (fsrv->child_sync) {
 
     shmdt(fsrv->child_sync);
+    ACTF("Calling shmctl");
     shmctl(fsrv->child_sync_shm_id, IPC_RMID, NULL);
     fsrv->child_sync_shm_id = -1;
     fsrv->child_sync = NULL;
