@@ -385,6 +385,7 @@ static void afl_child_sync_init(afl_forkserver_t *fsrv) {
     int shm_id = shmget(IPC_PRIVATE, sizeof(u32), IPC_CREAT | IPC_EXCL | 0600);
     if (shm_id < 0) {
       perror("oh no");
+      system("ipcs -m");
       FATAL("shmget failed for futex");
     }
     fsrv->child_sync = shmat(shm_id, NULL, 0);
